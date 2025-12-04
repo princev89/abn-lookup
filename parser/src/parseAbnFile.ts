@@ -28,7 +28,7 @@ export async function parseAbnFile(filePath: string): Promise<AbnEntityRecord[]>
       currentPath.push(node.name);
       currentText = "";
 
-     
+
       if (node.name === "ABR") {
         currentRecord = {
           businessNames: [],

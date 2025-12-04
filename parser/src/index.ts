@@ -35,6 +35,9 @@ async function main() {
 
 
 async function parseAndInsertStreaming(filePath: string): Promise<void> {
+  const startTime = Date.now();
+  console.log(`Starting parse at ${new Date().toLocaleTimeString()}`);
+
   return new Promise((resolve, reject) => {
     let batch: AbnEntityRecord[] = [];
     let totalRecords = 0;
@@ -48,11 +51,11 @@ async function parseAndInsertStreaming(filePath: string): Promise<void> {
     const flushBatch = async () => {
       if (batch.length > 0) {
         batchCount++;
+        const batchStart = Date.now();
         await insertBatch(batch);
-        console.log(`  Inserted batch ${batchCount} (${batch.length} records, total: ${totalRecords})`);
+        const batchTime = Date.now() - batchStart;
+        console.log(`Batch ${batchCount}: ${batch.length} records (${batchTime}ms) | Total: ${totalRecords}`);
         batch = [];
-
-        // Force garbage collection hint
         if (global.gc) global.gc();
       }
     };
@@ -142,9 +145,9 @@ async function parseAndInsertStreaming(filePath: string): Promise<void> {
     });
 
     parser.on("end", async () => {
-      // Insert remaining records
       await flushBatch();
-      console.log(`  Completed: ${totalRecords} total records`);
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      console.log(`Completed: ${totalRecords} records in ${elapsed}s`);
       resolve();
     });
 
