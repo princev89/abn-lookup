@@ -99,8 +99,8 @@ app.get("/filters", async (_req, res) => {
 
     res.json({
       data: {
-        entity_type: entity.rows.map((data) => data.entity_type),
-        states: entity.rows.map((data) => data.state)
+        entity_type: Array.from(new Set(entity.rows.map((data) => data.entity_type))).filter(Boolean),
+        states: Array.from(new Set(entity.rows.map((data) => data.state))).filter(Boolean)
       }
     });
   }
